@@ -11,7 +11,7 @@ func _ready() -> void:
 		var cursor = $Cursor.duplicate() as Polygon2D
 		cursor.color = Color.from_hsv(i * 0.2, 0.9, 1.0)
 		cursor.position += Vector2(64, 0).rotated(i * 0.2)
-		RawInput.warp_mouse_position(cursor.position, i)
+		RawInput.warp_mouse(cursor.position, i)
 		add_child(cursor)
 		cursors.append(cursor)
 
@@ -28,4 +28,4 @@ func _process(delta: float) -> void:
 func _on_raw_input_input_event(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.pressed and event.button_index == MOUSE_BUTTON_MIDDLE:
-			RawInput.warp_mouse_position(get_viewport_rect().size/2, event.device)
+			RawInput.warp_mouse(get_viewport_rect().size/2, event.device)

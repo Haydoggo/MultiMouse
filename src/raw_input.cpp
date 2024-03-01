@@ -23,7 +23,7 @@ static List<Vector2> mousePositions;
 
 void RawInput::_bind_methods()
 {
-	ClassDB::bind_method(D_METHOD("warp_mouse_position", "position", "id"), &RawInput::warp_mouse_position);
+	ClassDB::bind_method(D_METHOD("warp_mouse", "position", "id"), &RawInput::warp_mouse);
 	ClassDB::bind_method(D_METHOD("is_mouse_button_pressed", "button", "id"), &RawInput::is_mouse_button_pressed);
 	ClassDB::bind_method(D_METHOD("get_mouse_position", "id"), &RawInput::get_mouse_position);
 	ClassDB::bind_method(D_METHOD("get_mouse_device_count"), &RawInput::get_mouse_device_count);
@@ -92,7 +92,7 @@ MouseInfo *get_mouse_info(int id)
 	}
 }
 
-void RawInput::warp_mouse_position(Vector2 position, int id)
+void RawInput::warp_mouse(Vector2 position, int id)
 {
 	MouseInfo *mi = get_mouse_info(id);
 	if (!mi)

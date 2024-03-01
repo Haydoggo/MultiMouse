@@ -28,7 +28,7 @@ public:
 
 	RawInput();
 	~RawInput();
-	void warp_mouse_position(Vector2 position, int id);
+	void warp_mouse(Vector2 position, int id);
 	bool is_mouse_button_pressed(MouseButton button, int id);
 	Vector2 get_mouse_position(int id);
 	int get_mouse_device_count();
