@@ -8,19 +8,7 @@ blend_mode = 1
 [node name="Main" type="Node2D"]
 script = ExtResource("1_jq2b5")
 
-[node name="Cursor1" type="Polygon2D" parent="."]
+[node name="Cursor" type="Polygon2D" parent="."]
 material = SubResource("CanvasItemMaterial_xdu28")
-color = Color(1, 0, 0, 1)
-polygon = PackedVector2Array(0, 0, 0, 40, 9, 34, 15, 44, 21, 40, 16, 31, 28, 29)
-
-[node name="Cursor2" type="Polygon2D" parent="."]
-material = SubResource("CanvasItemMaterial_xdu28")
-position = Vector2(8, 0)
-color = Color(0, 1, 0, 1)
-polygon = PackedVector2Array(0, 0, 0, 40, 9, 34, 15, 44, 21, 40, 16, 31, 28, 29)
-
-[node name="Cursor3" type="Polygon2D" parent="."]
-material = SubResource("CanvasItemMaterial_xdu28")
-position = Vector2(15, 0)
-color = Color(0, 0, 1, 1)
+position = Vector2(576, 324)
 polygon = PackedVector2Array(0, 0, 0, 40, 9, 34, 15, 44, 21, 40, 16, 31, 28, 29)
