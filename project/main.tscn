@@ -12,3 +12,9 @@ script = ExtResource("1_jq2b5")
 material = SubResource("CanvasItemMaterial_xdu28")
 position = Vector2(576, 324)
 polygon = PackedVector2Array(0, 0, 0, 40, 9, 34, 15, 44, 21, 40, 16, 31, 28, 29)
+
+[node name="Label" type="Label" parent="Cursor"]
+offset_left = 7.0
+offset_top = -10.0
+offset_right = 47.0
+offset_bottom = 13.0

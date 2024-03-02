@@ -10,9 +10,10 @@ func _ready() -> void:
 	for i in RawInput.get_mouse_device_count():
 		var cursor = $Cursor.duplicate() as Polygon2D
 		cursor.color = Color.from_hsv(i * 0.2, 0.9, 1.0)
-		cursor.position += Vector2(64, 0).rotated(i * 0.2)
+		cursor.position += Vector2(64, 0).rotated(i * TAU/8)
 		RawInput.warp_mouse(cursor.position, i)
 		add_child(cursor)
+		cursor.get_node("Label").text = str(i)
 		cursors.append(cursor)
 
 	RawInput.input_event.connect(_on_raw_input_input_event)
