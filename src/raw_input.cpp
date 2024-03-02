@@ -18,8 +18,8 @@ RawInput *RawInput::singleton = nullptr;
 
 static WNDPROC g_oldWndProc = nullptr;
 static RBMap<HANDLE, MouseInfo *> mouseInfos;
-static RBMap<HANDLE, int> keyboardIds;
 static List<Vector2> mousePositions;
+static bool initialized = false;
 
 void RawInput::_bind_methods()
 {
@@ -27,14 +27,12 @@ void RawInput::_bind_methods()
 	ClassDB::bind_method(D_METHOD("is_mouse_button_pressed", "button", "id"), &RawInput::is_mouse_button_pressed);
 	ClassDB::bind_method(D_METHOD("get_mouse_position", "id"), &RawInput::get_mouse_position);
 	ClassDB::bind_method(D_METHOD("get_mouse_device_count"), &RawInput::get_mouse_device_count);
-	ClassDB::bind_method(D_METHOD("initialize"), &RawInput::initialize);
 	ADD_SIGNAL(MethodInfo("input_event", PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "InputEvent")));
 }
 
 RawInput::RawInput()
 {
 	singleton = this;
-	call_deferred("initialize");
 }
 
 RawInput::~RawInput()
@@ -45,11 +43,12 @@ RawInput::~RawInput()
 
 void RawInput::initialize()
 {
+	UtilityFunctions::print("initializing raw input");
 	HWND handle = (HWND)DisplayServer::get_singleton()->window_get_native_handle(DisplayServer::WINDOW_HANDLE);
 	g_oldWndProc = (WNDPROC)GetWindowLongPtr(handle, GWLP_WNDPROC);
 	SetWindowLongPtr(handle, GWLP_WNDPROC, (LONG_PTR)MyWndProc);
 	RAWINPUTDEVICELIST *devices;
-	
+
 	// Populate MiceInfos
 	UINT numDevices;
 	if (GetRawInputDeviceList(NULL, &numDevices, sizeof(RAWINPUTDEVICELIST)) == -1)
@@ -73,6 +72,7 @@ void RawInput::initialize()
 		}
 	}
 	std::free(devices);
+	initialized = true;
 }
 
 MouseInfo *get_mouse_info(int id)
@@ -94,6 +94,8 @@ MouseInfo *get_mouse_info(int id)
 
 void RawInput::warp_mouse(Vector2 position, int id)
 {
+	if (!initialized)
+		initialize();
 	MouseInfo *mi = get_mouse_info(id);
 	if (!mi)
 		return;
@@ -102,6 +104,8 @@ void RawInput::warp_mouse(Vector2 position, int id)
 
 bool RawInput::is_mouse_button_pressed(MouseButton button, int id)
 {
+	if (!initialized)
+		initialize();
 	MouseInfo *mi = get_mouse_info(id);
 	if (!mi)
 		return false;
@@ -123,6 +127,8 @@ bool RawInput::is_mouse_button_pressed(MouseButton button, int id)
 
 Vector2 RawInput::get_mouse_position(int id)
 {
+	if (!initialized)
+		initialize();
 	MouseInfo *mi = get_mouse_info(id);
 	if (!mi)
 		return Vector2();
@@ -131,6 +137,8 @@ Vector2 RawInput::get_mouse_position(int id)
 
 int RawInput::get_mouse_device_count()
 {
+	if (!initialized)
+		initialize();
 	int deviceCount = 0;
 	RAWINPUTDEVICELIST *devices;
 	UINT numDevices;
@@ -250,19 +258,6 @@ void handle_mouse(RAWMOUSE rm, MouseInfo *mi)
 	}
 }
 
-void handle_keyboard(RAWKEYBOARD rk, int id)
-{
-	// handle keyboard input
-	if (rk.Flags & RI_KEY_MAKE)
-	{
-		RawInput::get_singleton()->emit_signal("key_pressed", rk.VKey, id);
-	}
-	if (rk.Flags & RI_KEY_BREAK)
-	{
-		RawInput::get_singleton()->emit_signal("key_released", rk.VKey, id);
-	}
-}
-
 LRESULT CALLBACK MyWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	// Call the original window procedure first
@@ -295,24 +290,11 @@ LRESULT CALLBACK MyWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 						handle_mouse(rm, mouseInfos[device]);
 					}
-					else if (rawInput->header.dwType == RIM_TYPEKEYBOARD)
-					{
-						// handle keyboard input
-						RAWKEYBOARD rk = rawInput->data.keyboard;
-						HANDLE device = rawInput->header.hDevice;
-						if (!keyboardIds.has(device))
-						{
-							keyboardIds.insert(device, keyboardIds.size());
-						}
-						int id = keyboardIds[device];
-						handle_keyboard(rk, id);
-					}
 				}
 				free(rawInput);
 			}
 		}
 	}
-
 	// return the original window procedure's return value
 	return retval;
 }

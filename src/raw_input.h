@@ -14,7 +14,7 @@ class RawInput : public Object {
 	GDCLASS(RawInput, Object)
 	static RawInput *singleton;
 private:
-	void initialize();
+	static void initialize();
 protected:
 	static void _bind_methods();
 
